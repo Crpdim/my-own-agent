@@ -1,0 +1,81 @@
+# Copy to agent.toml. Plugin factories are trusted Python code.
+[[plugins]]
+factory = "my_own_agent.plugins.models:create_plugin"
+
+[plugins.config.models.deepseek]
+adapter = "openai_chat"
+model = "deepseek-v4-flash"
+[plugins.config.models.deepseek.options]
+base_url = "https://api.deepseek.com"
+api_key_env = "DEEPSEEK_API_KEY"
+timeout_seconds = 120
+include_usage = true
+replay_thinking = true
+reasoning_field = "reasoning_content"
+max_tokens = 4096
+[plugins.config.models.deepseek.options.extra_body]
+thinking = { type = "enabled" }
+reasoning_effort = "high"
+
+[[plugins]]
+factory = "my_own_agent.plugins.openai_chat:create_plugin"
+
+[[plugins]]
+factory = "my_own_agent.plugins.tools:create_plugin"
+
+[[plugins]]
+factory = "my_own_agent.plugins.clock:create_plugin"
+
+[[plugins]]
+factory = "my_own_agent.plugins.local_tools:create_plugin"
+[plugins.config]
+cwd = "."
+timeout_seconds = 120
+
+[[plugins]]
+factory = "my_own_agent.plugins.memory:create_plugin"
+
+[[plugins]]
+factory = "my_own_agent.plugins.prompts:create_plugin"
+[plugins.config]
+cwd = "."
+include_tool_descriptions = false
+# Explicit, ordered sources; files are resolved relative to prompts.cwd.
+sections = [{ key = "style", text = "回答清晰、简洁；不要编造工具结果。" }]
+
+[[plugins]]
+factory = "my_own_agent.plugins.agent:create_plugin"
+[plugins.config]
+model = "deepseek"
+system = """
+你是用户的工作助手，协助处理项目、文件、信息整理和任务执行。
+根据用户目标采取范围明确的行动；先核实相关事实，修改后做适用验证。
+回答说明实际结果和未完成事项；遇到权限或需求不明确时先澄清。
+"""
+use_prompts = true
+timezone = "Asia/Shanghai"
+max_steps = 8
+
+[[plugins]]
+factory = "my_own_agent.plugins.runner:create_plugin"
+[plugins.config]
+max_pending = 32
+
+[[plugins]]
+factory = "my_own_agent.plugins.deepseek_billing:create_plugin"
+[plugins.config]
+model_alias = "deepseek"
+api_key_env = "DEEPSEEK_API_KEY"
+# USD per 1M tokens. These are DeepSeek V4 Flash rates as of 2026-09-11;
+# update them from the official pricing page when prices change.
+[plugins.config.off_peak]
+cached_input = "0.007"
+uncached_input = "0.22"
+output = "0.66"
+[plugins.config.peak]
+cached_input = "0.014"
+uncached_input = "0.44"
+output = "1.32"
+
+[[plugins]]
+factory = "my_own_agent.plugins.cli:create_plugin"

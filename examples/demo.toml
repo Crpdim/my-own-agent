@@ -1,0 +1,38 @@
+# Offline scripted demo; no credentials or network needed.
+[[plugins]]
+factory = "my_own_agent.plugins.models:create_plugin"
+[plugins.config.models.demo]
+adapter = "demo"
+model = "scripted-clock"
+
+[[plugins]]
+factory = "my_own_agent.plugins.demo:create_plugin"
+
+[[plugins]]
+factory = "my_own_agent.plugins.tools:create_plugin"
+
+[[plugins]]
+factory = "my_own_agent.plugins.clock:create_plugin"
+
+[[plugins]]
+factory = "my_own_agent.plugins.memory:create_plugin"
+
+[[plugins]]
+factory = "my_own_agent.plugins.prompts:create_plugin"
+[plugins.config]
+sections = [{ key = "style", text = "回答简洁，保留工具结果中的事实。" }]
+include_tool_descriptions = true
+
+[[plugins]]
+factory = "my_own_agent.plugins.agent:create_plugin"
+[plugins.config]
+model = "demo"
+system = ""
+use_prompts = true
+timezone = "Asia/Shanghai"
+
+[[plugins]]
+factory = "my_own_agent.plugins.runner:create_plugin"
+
+[[plugins]]
+factory = "my_own_agent.plugins.cli:create_plugin"

@@ -1,0 +1,562 @@
+{
+  "$defs": {
+    "AvailableContent": {
+      "additionalProperties": false,
+      "properties": {
+        "ref": {
+          "$ref": "#/$defs/CapturedContentRef"
+        },
+        "state": {
+          "const": "available",
+          "title": "State",
+          "type": "string"
+        },
+        "inline": {
+          "$ref": "#/$defs/JsonValue"
+        },
+        "size_bytes": {
+          "minimum": 0,
+          "title": "Size Bytes",
+          "type": "integer"
+        },
+        "sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Sha256",
+          "type": "string"
+        }
+      },
+      "required": [
+        "ref",
+        "state",
+        "inline",
+        "size_bytes",
+        "sha256"
+      ],
+      "title": "AvailableContent",
+      "type": "object"
+    },
+    "CapturedContentRef": {
+      "additionalProperties": false,
+      "properties": {
+        "content_id": {
+          "title": "Content Id",
+          "type": "string"
+        },
+        "media_type": {
+          "enum": [
+            "text/plain",
+            "application/json"
+          ],
+          "title": "Media Type",
+          "type": "string"
+        },
+        "capture_state": {
+          "const": "captured",
+          "default": "captured",
+          "title": "Capture State",
+          "type": "string"
+        }
+      },
+      "required": [
+        "content_id",
+        "media_type"
+      ],
+      "title": "CapturedContentRef",
+      "type": "object"
+    },
+    "ContentRef": {
+      "additionalProperties": false,
+      "properties": {
+        "content_id": {
+          "title": "Content Id",
+          "type": "string"
+        },
+        "media_type": {
+          "enum": [
+            "text/plain",
+            "application/json"
+          ],
+          "title": "Media Type",
+          "type": "string"
+        },
+        "capture_state": {
+          "enum": [
+            "captured",
+            "not_captured"
+          ],
+          "title": "Capture State",
+          "type": "string"
+        }
+      },
+      "required": [
+        "content_id",
+        "media_type",
+        "capture_state"
+      ],
+      "title": "ContentRef",
+      "type": "object"
+    },
+    "ContentView": {
+      "discriminator": {
+        "mapping": {
+          "available": "#/$defs/AvailableContent",
+          "not_captured": "#/$defs/UncapturedContent"
+        },
+        "propertyName": "state"
+      },
+      "oneOf": [
+        {
+          "$ref": "#/$defs/AvailableContent"
+        },
+        {
+          "$ref": "#/$defs/UncapturedContent"
+        }
+      ]
+    },
+    "JsonValue": {},
+    "PromptBuild": {
+      "additionalProperties": false,
+      "properties": {
+        "build_id": {
+          "title": "Build Id",
+          "type": "string"
+        },
+        "request_id": {
+          "title": "Request Id",
+          "type": "string"
+        },
+        "composer": {
+          "title": "Composer",
+          "type": "string"
+        },
+        "composer_version": {
+          "title": "Composer Version",
+          "type": "string"
+        },
+        "provenance": {
+          "enum": [
+            "tracked",
+            "opaque"
+          ],
+          "title": "Provenance",
+          "type": "string"
+        },
+        "status": {
+          "enum": [
+            "succeeded",
+            "failed",
+            "cancelled"
+          ],
+          "title": "Status",
+          "type": "string"
+        },
+        "sources": {
+          "items": {
+            "$ref": "#/$defs/PromptSource"
+          },
+          "title": "Sources",
+          "type": "array"
+        },
+        "fragments": {
+          "items": {
+            "$ref": "#/$defs/PromptFragment"
+          },
+          "title": "Fragments",
+          "type": "array"
+        },
+        "operations": {
+          "items": {
+            "$ref": "#/$defs/PromptOperation"
+          },
+          "title": "Operations",
+          "type": "array"
+        },
+        "placements": {
+          "items": {
+            "$ref": "#/$defs/PromptPlacement"
+          },
+          "title": "Placements",
+          "type": "array"
+        },
+        "snapshot_id": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Snapshot Id"
+        },
+        "error": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Error"
+        }
+      },
+      "required": [
+        "build_id",
+        "request_id",
+        "composer",
+        "composer_version",
+        "provenance",
+        "status",
+        "sources",
+        "fragments",
+        "operations",
+        "placements"
+      ],
+      "title": "PromptBuild",
+      "type": "object"
+    },
+    "PromptFragment": {
+      "additionalProperties": false,
+      "properties": {
+        "fragment_id": {
+          "title": "Fragment Id",
+          "type": "string"
+        },
+        "key": {
+          "title": "Key",
+          "type": "string"
+        },
+        "source_ids": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Source Ids",
+          "type": "array"
+        },
+        "content": {
+          "$ref": "#/$defs/ContentRef"
+        }
+      },
+      "required": [
+        "fragment_id",
+        "key",
+        "source_ids",
+        "content"
+      ],
+      "title": "PromptFragment",
+      "type": "object"
+    },
+    "PromptOperation": {
+      "additionalProperties": false,
+      "properties": {
+        "operation_id": {
+          "title": "Operation Id",
+          "type": "string"
+        },
+        "order": {
+          "minimum": 1,
+          "title": "Order",
+          "type": "integer"
+        },
+        "producer": {
+          "title": "Producer",
+          "type": "string"
+        },
+        "action": {
+          "enum": [
+            "include",
+            "skip",
+            "transform"
+          ],
+          "title": "Action",
+          "type": "string"
+        },
+        "source_ids": {
+          "default": [],
+          "items": {
+            "type": "string"
+          },
+          "title": "Source Ids",
+          "type": "array"
+        },
+        "input_fragment_ids": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Input Fragment Ids",
+          "type": "array"
+        },
+        "output_fragment_ids": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Output Fragment Ids",
+          "type": "array"
+        },
+        "reason": {
+          "title": "Reason",
+          "type": "string"
+        }
+      },
+      "required": [
+        "operation_id",
+        "order",
+        "producer",
+        "action",
+        "input_fragment_ids",
+        "output_fragment_ids",
+        "reason"
+      ],
+      "title": "PromptOperation",
+      "type": "object"
+    },
+    "PromptPlacement": {
+      "additionalProperties": false,
+      "properties": {
+        "fragment_id": {
+          "title": "Fragment Id",
+          "type": "string"
+        },
+        "snapshot_id": {
+          "title": "Snapshot Id",
+          "type": "string"
+        },
+        "target": {
+          "title": "Target",
+          "type": "string"
+        },
+        "start": {
+          "anyOf": [
+            {
+              "minimum": 0,
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Start"
+        },
+        "end": {
+          "anyOf": [
+            {
+              "minimum": 0,
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "End"
+        }
+      },
+      "required": [
+        "fragment_id",
+        "snapshot_id",
+        "target"
+      ],
+      "title": "PromptPlacement",
+      "type": "object"
+    },
+    "PromptSnapshot": {
+      "additionalProperties": false,
+      "properties": {
+        "snapshot_id": {
+          "title": "Snapshot Id",
+          "type": "string"
+        },
+        "stage": {
+          "const": "assembled",
+          "default": "assembled",
+          "title": "Stage",
+          "type": "string"
+        },
+        "request": {
+          "$ref": "#/$defs/ContentRef"
+        }
+      },
+      "required": [
+        "snapshot_id",
+        "request"
+      ],
+      "title": "PromptSnapshot",
+      "type": "object"
+    },
+    "PromptSource": {
+      "additionalProperties": false,
+      "properties": {
+        "source_id": {
+          "title": "Source Id",
+          "type": "string"
+        },
+        "producer": {
+          "title": "Producer",
+          "type": "string"
+        },
+        "kind": {
+          "$ref": "#/$defs/PromptSourceKind"
+        },
+        "label": {
+          "title": "Label",
+          "type": "string"
+        },
+        "locator": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Locator"
+        },
+        "status": {
+          "enum": [
+            "loaded",
+            "skipped",
+            "failed"
+          ],
+          "title": "Status",
+          "type": "string"
+        },
+        "content": {
+          "$ref": "#/$defs/ContentRef"
+        }
+      },
+      "required": [
+        "source_id",
+        "producer",
+        "kind",
+        "label",
+        "status",
+        "content"
+      ],
+      "title": "PromptSource",
+      "type": "object"
+    },
+    "PromptSourceKind": {
+      "enum": [
+        "config",
+        "file",
+        "history",
+        "tool",
+        "composer",
+        "runtime",
+        "extension"
+      ],
+      "type": "string"
+    },
+    "UncapturedContent": {
+      "additionalProperties": false,
+      "properties": {
+        "ref": {
+          "$ref": "#/$defs/UncapturedContentRef"
+        },
+        "state": {
+          "const": "not_captured",
+          "title": "State",
+          "type": "string"
+        },
+        "inline": {
+          "default": null,
+          "title": "Inline",
+          "type": "null"
+        },
+        "size_bytes": {
+          "default": null,
+          "title": "Size Bytes",
+          "type": "null"
+        },
+        "sha256": {
+          "default": null,
+          "title": "Sha256",
+          "type": "null"
+        }
+      },
+      "required": [
+        "ref",
+        "state"
+      ],
+      "title": "UncapturedContent",
+      "type": "object"
+    },
+    "UncapturedContentRef": {
+      "additionalProperties": false,
+      "properties": {
+        "content_id": {
+          "title": "Content Id",
+          "type": "string"
+        },
+        "media_type": {
+          "enum": [
+            "text/plain",
+            "application/json"
+          ],
+          "title": "Media Type",
+          "type": "string"
+        },
+        "capture_state": {
+          "const": "not_captured",
+          "default": "not_captured",
+          "title": "Capture State",
+          "type": "string"
+        }
+      },
+      "required": [
+        "content_id",
+        "media_type"
+      ],
+      "title": "UncapturedContentRef",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "schema_version": {
+      "const": 1,
+      "default": 1,
+      "title": "Schema Version",
+      "type": "integer"
+    },
+    "type": {
+      "const": "prompt.inspection",
+      "default": "prompt.inspection",
+      "title": "Type",
+      "type": "string"
+    },
+    "build": {
+      "$ref": "#/$defs/PromptBuild"
+    },
+    "snapshot": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/PromptSnapshot"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null
+    },
+    "contents": {
+      "items": {
+        "$ref": "#/$defs/ContentView"
+      },
+      "title": "Contents",
+      "type": "array"
+    }
+  },
+  "required": [
+    "build",
+    "contents"
+  ],
+  "title": "PromptInspection",
+  "type": "object"
+}
